@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+	<HEAD>
+		<TITLE>补填日报</TITLE>
+		<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<META http-equiv=Pragma content=no-cache>
+		<META http-equiv=Cache-Control content=no-cache>
+		<META http-equiv=Expires content=0>
+		<link rel="stylesheet" type="text/css" href="/hps/resources/css/ext-all.css" />
+		<link href="/hps/css_cmmi/css.css" rel="stylesheet" type="text/css" />		
+		<script type="text/javascript" src="/hps/js_cmmi/main.js"></script>
+		<script type="text/javascript">
+
+function lastweekquery(){
+	var querysdate=document.butianribao.querysdate.value;
+	document.butianribao.action = '/hps/dailyReport.do?method=viewlastweek&date='+querysdate;
+	document.butianribao.submit()
+}
+function nextweekquery(){
+	var querysdate=document.butianribao.querysdate.value;
+	document.butianribao.action = '/hps/dailyReport.do?method=viewnextweek&date='+querysdate;
+	document.butianribao.submit()
+}
+function link(str1){	
+	window.location.href='/hps/dailyReport.do?method=writeDailyReport&date='+str1;
+}
+function init(){
+	var jsbutianstartdate=document.butianribao.jsbutianstartdate.value;
+	var jsbutianenddate=document.butianribao.jsbutianenddate.value;	
+	
+	if(jsbutianstartdate!='null'){
+		document.butianribao.querysdate.value = jsbutianstartdate;
+	}
+	if(jsbutianenddate!='null'){
+		document.butianribao.queryedate.value = jsbutianenddate;
+	}
+	initNav('navBar', '日报周报', '补填日报');
+	initButton('btnLastWeek', 80);
+	initButton('btnNextWeek', 80);
+}
+</script>
+	</HEAD>
+	<SCRIPT language=javascript src="../js/show_note.js"></SCRIPT>
+	<body onload="init()">
+	<div style='width:100%; height:100%;overflow:auto;'>
+		<FORM name="butianribao"  action="#" method=post encType=multipart/form-data>
+		<input type="hidden" name="jsbutianstartdate" value="null">
+		<input type="hidden" name="jsbutianenddate" value="null">
+								
+								
+		<table width="100%" height='100%' border="0"  cellpadding="0" cellspacing="0" bgcolor="#98c0f4">
+     	 <tr>
+        <td  valign="top" bgcolor="#FFFFFF">
+			<!-- header bar start-->
+			<table width="100%" border="0" cellspacing="0" cellpadding="0" background="/hps/css_cmmi/images/r_top_bg2.gif">
+			  <tr  height="29" >	
+				<td  width="42" align="center"><img src="/hps/css_cmmi/images/pic_01.gif" width="16" height="15" /></td>
+				<td  id='navBar'></td>
+			  </tr>
+			</table>
+		</td>
+	  </tr>
+	  <tr height="100%">
+	  	<td valign="top"  style='padding:5px 5px 5px 5px;'  bgcolor="#FFFFFF">
+			<table  border='0' cellpadding="10px"  cellspacing="0"  class='tableBorderBg' style="width:600px;">
+					<tr>
+					  <td valign="top"  class='tdborder'>					  
+					  <table width="100%"  align="center"  cellspacing="0" cellpadding=0>
+						<tr>
+						  <td  valign='top' class="panelCaption">补填日报:</td>
+						 </tr>
+					  </table>
+					  <table align="left" cellpadding="5"  class="tableBorder" >
+	
+						  <tr>
+							<td class='fieldCaption'>
+								<span class="tdTextImp">起始时间:</span><input type="text" class="fieldText" style="WIDTH: 120px" name="querysdate" readonly="readonly" value="2015-10-12" /> 
+							</td>
+							<td class='fieldCaption'>
+								<span class="tdTextImp">结束时间:</span><input type="text" class="fieldText" style="WIDTH: 120px" name="queryedate"  readonly="readonly" value="2015-10-19" />	
+							</td>
+							</tr>	
+					  </table>
+					  </td>	 					
+					</tr>
+					<tr>
+						 <td>
+							<table style="margin-left: 8px">
+								<tr>
+									<td>
+										<div id='btnLastWeek' text="上一周"
+														onclick='lastweekquery()'></div>
+									</td>
+									<td>
+										<div id='btnNextWeek' text="下一周"
+													onclick='nextweekquery()'></div>
+									</td>
+									<td><span class=panelCaption style="margin-left: 50px">
+									</span></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				<tr>
+					<td valign="top"  class='tdborder'>	
+					  <table width="100%" align="center"  cellspacing="0">
+						  <tbody>
+							<tr class=navDir>
+							<td class=navDir width=153>日报列表</td></tr></tbody>
+					  </table>
+						<table id="actionlist" class='tableData' >
+							<tr>
+											<td  align="center" bgcolor="#c2ddef" width="120px">
+												<b>序号</b>
+											</td>
+											<td align="center" bgcolor="#c2ddef" width="120px">
+												<b>日期</b>
+											</td>
+											<td align="center" bgcolor="#c2ddef">
+												<b>状态</b>
+											</td>
+										</tr>
+										
+										
+											
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														1 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-12')">2015-10-12</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														2 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-13')">2015-10-13</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														3 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-14')">2015-10-14</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														4 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-15')">2015-10-15</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														5 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-16')">2015-10-16</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+												<tr>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														6 &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<a href="#" onclick="link('2015-10-19')">2015-10-19</a> &nbsp;
+													</td>
+													<td align="center" bgcolor="#FFFFFF" class="fieldCaption">
+														<span class="tdTextImp">未填写</span> &nbsp;
+													</td>
+												</tr>
+										
+									
+							</table>
+					  </td>
+					</tr>
+			</table>
+	
+		</td>
+	</tr>
+	</table>
+			</FORM>
+			</div>
+	</body>
+</HTML>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" name="Association" monitorInterval="60">
+<properties>
+	<property name="main_path">E:/server.log</property>
+</properties>
+
+<Appenders>
+	<File name="main" fileName="${main_path}">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd  HH:mm:ss.SSS} [%t] %-5level %logger{1.} - %msg%n - %xEx{short}</Pattern>
+      </PatternLayout>
+    </File>
+</Appenders>
+
+<Loggers>
+	<Root level="info">
+		<AppenderRef ref="main" />
+	</Root>
+</Loggers>
+
+</Configuration>

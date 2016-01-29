@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2015/10/22 11:09:19                                                        
+
+     HPSAutoDaily    
+     description
+                   
+     lizhengkai                                                                
+     ====================================================================== -->
+<project name="HPSAutoDaily" default="compile">
+    <description>
+            批量日报工具
+    </description>
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" depends="depends" description="description">
+        
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: depends                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="depends">
+    </target>
+	
+	<target name="init" depends="clean">
+		<mkdir dir="build/classes" />
+		<mkdir dir="dist" />
+	</target>
+	
+	<target name="clean">
+		<delete dir="build/classes" />
+		<delete dir="dist" />
+	</target>
+	
+	<path id="lib">
+		<fileset file="WebContent/WEB-INF/lib/*.jar" />
+	</path>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="src" destdir="build/classes">
+			<classpath refid="lib"/>
+		</javac>
+	</target>
+</project>

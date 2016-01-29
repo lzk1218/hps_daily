@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="js/jquery-1.11.0.js"></script>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+		var lastProject;
+		
+		var lastStage;
+		
+		var dateArray = new Array();
+		
+		var now = new Date();
+		
+		now.setTime(now.getTime() - 24 * 60 * 60 * 1000);
+		
+		var end = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
+		
+		$("#endDate").val(end);
+		$("#startDate").val(end);
+		
+		$("#date").hide();
+		$("#daily").hide();
+		
+		$("#login").click(function(){
+			var name = $("#name").val();
+			var password = $("#password").val();
+			$.ajax({
+			  type: 'POST',
+			  url: "login",
+			  async: false,
+			  data:{"name":name,"password":password},
+			  success: function(data){
+				  if (data == "OK") {
+					  alert("登录成功！");
+					  $("#date").show();
+				  }
+				  else
+					  alert("登录失败！");
+			  },
+			  dataType: "text",
+			  error: function(req, error, obj) {
+				  alert(error);
+			  }
+			  
+			});
+		});
+		
+		$("#selectDate").click(function(){
+			var startDate = $("#startDate").val();
+			var endDate = $("#endDate").val();
+			$.ajax({
+			  type: 'POST',
+			  url: "getdate",
+			  async: false,
+			  data:{"startDate":startDate,"endDate":endDate},
+			  success: function(data){
+				  if (data == "error_params")
+					  alert("参数错误！");
+				  else if (data == "error_internal")
+					  alert("内部错误！");
+				  else {
+					  $("#date_table").empty();
+					  dateArray = new Array();
+					  $("#date_table").append("<tr><th>时间</th><th>是否已填写</th></tr>");
+					  var jsonObj = eval('(' + data + ')');
+					  for (var date in jsonObj) {
+						  
+						  var isCommit;
+						  if (jsonObj[date]) {
+							  isCommit = "是"
+						  } else {
+							  dateArray.push(date);
+							  isCommit = "否"
+						  }
+						  
+						  $("#date_table").append("<tr><td>" + date + 
+								  "</td><td>" + isCommit + "</td></tr>");
+						  
+					  }
+					  $("#daily").show();
+				  }
+			  },
+			  dataType: "text"
+			});
+		});
+		
+		$("#project").one("click", function(){
+			
+			var date = dateArray[dateArray.length-1];
+			
+			$.ajax({
+			  type: 'POST',
+			  url: "project",
+			  async: false,
+			  data:{"date":date},
+			  success: function(data){
+				  if (data == "error_params")
+					  alert("参数错误！");
+				  else if (data == "error_internal")
+					  alert("内部错误！");
+				  else if (data == "error_session")
+					  alert("session错误！");
+				  else {
+					  $("#project").empty();
+					  var jsonObj = eval('(' + data + ')');
+					  for (var id in jsonObj) {
+						  $("#project").append("<option value='" + id +"'>" + jsonObj[id]
+								  +"</option>");
+					  }
+				  }
+			  },
+			  dataType: "text"
+			});
+			
+		});
+		
+		//R0=休假
+		//O2=会议
+		//O1=培训
+		//O4=支援
+		
+		$("#project").change(function(){
+			
+			var project = $("#project").val();
+			if ( project == 'R0' || project == 'O2' || project == 'O1' || project == 'O4') {
+				$("#module").attr("disabled","disabled");
+				$("#activity").attr("disabled","disabled");
+			} else {
+				$("#module").removeAttr("disabled");
+				$("#activity").removeAttr("disabled");
+			}
+			$("#stage").empty();
+			$("#module").empty();
+			$("#activity").empty();
+		});
+		
+		$("#stage").click(function(){
+			var project = $("#project").val();
+			
+			if (lastProject != project) {
+			
+				$.ajax({
+				  type: 'POST',
+				  url: "stage",
+				  async: false,
+				  data:{"project":project},
+				  success: function(data){
+					  if (data == "error_params")
+						  alert("参数错误！");
+					  else if (data == "error_internal")
+						  alert("内部错误！");
+					  else if (data == "error_session")
+						  alert("session错误！");
+					  else {
+						  $("#stage").empty();
+						  var jsonObj = eval('(' + data + ')');
+						  for (var id in jsonObj) {
+							  $("#stage").append("<option value='" + id +"'>" + jsonObj[id]
+									  +"</option>");
+						  }
+						  lastProject = project;
+					  }
+				  },
+				  dataType: "text"
+				});
+				
+				
+			}
+		});
+		
+		$("#module").click(function(){
+			var stage = $("#stage").val();
+			
+			if (lastStage != stage) {
+			
+				$.ajax({
+				  type: 'POST',
+				  url: "module",
+				  async: false,
+				  data:{"stage":stage},
+				  success: function(data){
+					  if (data == "error_params")
+						  alert("参数错误！");
+					  else if (data == "error_internal")
+						  alert("内部错误！");
+					  else if (data == "error_session")
+						  alert("session错误！");
+					  else {
+						  $("#module").empty();
+						  var jsonObj = eval('(' + data + ')');
+						  for (var id in jsonObj) {
+							  $("#module").append("<option value='" + id +"'>" + jsonObj[id]
+									  +"</option>");
+						  }
+						  lastStage = stage;
+					  }
+				  },
+				  dataType: "text"
+				});
+			}
+		});
+		
+		$("#activity").one("click", function(){
+			
+			$.ajax({
+				  type: 'POST',
+				  url: "activity",
+				  async: false,
+				  success: function(data){
+					  if (data == "error_params")
+						  alert("参数错误！");
+					  else if (data == "error_internal")
+						  alert("内部错误！");
+					  else if (data == "error_session")
+						  alert("session错误！");
+					  else {
+						  $("#activity").empty();
+						  var jsonObj = eval('(' + data + ')');
+						  for (var id in jsonObj) {
+							  $("#activity").append("<option value='" + id +"'>" + jsonObj[id]
+									  +"</option>");
+						  }
+					  }
+				  },
+				  dataType: "text"
+				});
+		});
+		
+		$("#commit").click(function(){
+			
+			var project = $("#project").val();
+			var stage = $("#stage").val();
+			var module = $("#module").val();
+			var activity = $("#activity").val();
+			var date = dateArray.toString();
+			var content = $("#content").val();
+			if (date == '') {
+				
+				alert("没有可填的日报!");
+				
+			} else {
+			
+				$.ajax({
+				  type: 'POST',
+				  url: "commit",
+				  async: false,
+				  data:{"project":project,"stage":stage,"module":module,
+					  "activity":activity,"date":date,"content":content},
+				  success: function(data){
+					  if (data == "error_params")
+						  alert("参数错误！");
+					  else if (data == "error_internal")
+						  alert("内部错误！");
+					  else if (data == "error_session")
+						  alert("session错误！");
+					  else {
+						  var jsonObj = eval('(' + data + ')');
+						  var message = "";
+						  for (var id in jsonObj) {
+							  var m;
+							  if (jsonObj[id]) {
+								  m = "保存成功"
+							  } else {
+								  m = "保存失败"
+							  }
+							  message += id + ":" + m + "\n";
+						  }
+						  alert(message);
+					  }
+				  },
+				  dataType: "text"
+				});
+			}
+		});
+		
+	$("#deleteReport").click(function(){
+		
+			var project = $("#project").val();
+			var stage = $("#stage").val();
+			var module = $("#module").val();
+			var activity = $("#activity").val();
+			var endDate =  $("#endDate").val();
+			var content = $("#content").val();
+			var startDate = $("#startDate").val();
+			if (endDate == '' || startDate == '') {
+				
+				alert("没有可删的日报!");
+				
+			} else {
+				$.ajax({
+				  type: 'POST',
+				  url: "deleteReport",
+				  async: false,
+				  data:{"project":project,"stage":stage,"module":module,
+					  "activity":activity,"endDate":endDate,"startDate":startDate,"content":content},
+				  success: function(data){
+						
+					  if (data == "error_params")
+						  alert("参数错误！");
+					  else if (data == "error_internal")
+						  alert("内部错误！");
+					  else if (data == "error_session")
+						  alert("session错误！");
+					  else {
+						  var jsonObj = eval('(' + data + ')');
+						  var message = "";
+						  for (var id in jsonObj) {
+							  var m;
+							  if (jsonObj[id]) {
+								  m = "删除成功"
+							  } else {
+								  m = "删除失败"
+							  }
+							  message += id + ":" + m + "\n";
+						  }
+						  alert(message);
+					  }
+				  },
+				  dataType: "text"
+				});
+			}
+		});
+	});
+	$("#login").trigger("click");
+</script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Hello</title>
+</head>
+<body>
+	请正确填写hps登录用户名与密码
+	<div>
+		用户名：<input id="name" name="name" type="text" size="15" value="songkaibo"/>
+		<br/>
+		密&nbsp;&nbsp;&nbsp;&nbsp;码：<input id="password" name="password" type="password" size="15" value="sunshine"/>
+		<br/>
+		<button id="login">login</button>
+	</div>
+	<br>
+	<div id="date">
+		请按格式填写
+		<br/>
+		开始时间：<input id="startDate" name="startDate" type="text"/>
+		<br/>
+		结束时间：<input id="endDate" name="endDate" type="text"/>
+		<br/>
+		<button id="selectDate">select</button>
+		<table id="date_table" border="1">
+			<tr>
+				<th>时间</th>
+				<th>是否已填写</th>
+			</tr>
+		</table>
+	</div>
+	<br>
+	<div id="daily">
+		<table id="daily_table" border="1">
+			<tr><th>项目</th><th>阶段/类别</th><th>模块</th><th>活动</th><th>内容</th></tr>
+			<tr>
+				<td>
+					<select id="project" name="project"></select>
+				</td>
+				<td>
+					<select id="stage" name="stage"></select>
+				</td>
+				<td>
+					<select id="module" name="module"></select>
+				</td>
+				<td>
+					<select id="activity" name="activity"></select>
+				</td>
+				<td>
+					<textarea id="content" name="content"></textarea>
+				</td>
+				
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>
+					<button id="commit" >提交</button>
+				</td>
+				
+				<td>
+					<button id="deleteReport" >删除日报</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

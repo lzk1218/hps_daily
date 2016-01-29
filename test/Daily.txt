@@ -1,0 +1,4 @@
+throw 'allowScriptTagRemoting is false.';
+//#DWR-INSERT
+//#DWR-REPLY
+dwr.engine._remoteHandleCallback('1','0',"\u4FDD\u5B58\u65E5\u62A5\u6210\u529F");

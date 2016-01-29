@@ -1,0 +1,405 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>hps</title>
+<link href="/hps/css_cmmi/css.css" rel="stylesheet" type="text/css" />
+<script language="javascript" src='/hps/js_cmmi/main.js'></script>
+<script type='text/javascript' src='/hps/dwr/interface/dwrService.js'></script>
+<script type='text/javascript' src='/hps/dwr/engine.js'></script>
+<script type='text/javascript' src='/hps/dwr/util.js'></script>
+<script type="text/javascript" src="/hps/js_cmmi/jquery-1.7.1.js"></script>
+<script language="javascript" src='/hps/js_cmmi/hsHelp.js'></script>
+<script language="javascript" src='/hps/js_cmmi/report.js'></script>
+<script type="text/javascript">
+	document.onselectstart = function(e){
+		var ev = window.event || e;
+		var element = ev.target || ev.srcElement;
+		var type = element.type || element.getAttribute('type');
+		if(type!='text' && type!='password' && type!='textarea')return false;
+	};
+</script>
+<script type="text/javascript">
+		var projectList=null;
+		var activityList=null;
+		var suggestion=null;
+		function showEditor(e) {
+			if(!e) e = window.event;
+			var td = e.srcElement;
+			if(td.parentElement.rowIndex == 0){
+				return;
+			}
+			if(td.cellIndex == 7){
+				if(window.confirm("")){
+					deleteSubItem(td.parentElement.rowIndex);
+					return;
+				}
+			}
+			if(td.cellIndex==0 || td.cellIndex==1 ){
+				showText(td);
+				return;
+			}
+			if( td.cellIndex==6){
+				showTextArea(td);
+				return;
+			}
+			if(td.cellIndex == 2){
+				var today = document.getElementById("textfield").value;
+				if(projectList==null){	
+					var personId = parseInt(document.getElementById("personId").value);
+					var getProj = function (ps){
+						projectList=ps;
+						showSelect(td,ps);
+					};
+					dwrService.getProjectByPersonId(personId,today,getProj);
+				}
+				else{
+					showSelect(td,projectList);
+				}		
+				return;
+			}			
+			if(td.cellIndex == 3){
+				var crow = td.parentElement;
+				var projectId=crow.cells[2].getAttribute('value');
+				var personId = parseInt(document.getElementById("personId").value);
+				if(projectId==null || projectId==""  ){
+					return;	
+				}
+				else{
+					var getMoment = function (list){
+						showSelect(td,list);
+					};			
+					dwrService.getStageIdForDaily(personId,projectId,getMoment);	
+				}
+				return;
+			}
+			if(td.cellIndex == 4){
+				var crow = td.parentElement;
+				var stageId=crow.cells[3].getAttribute('value');
+				if(stageId==null ||stageId=="" ){
+					return;
+				}else{
+					var projectId=crow.cells[2].getAttribute('value');				
+					if(projectId==null || projectId==""  ){
+						return;
+					}
+					if(projectId.substr(0,1)!="P"){
+						return;
+					}
+					var getModule = function (list){
+						showSelect(td,list);
+					};
+					//dwrService.getModuleForDaily(stageId,getModule);
+					dwrService.getAllStageMoudleIdandName(stageId,getModule);	
+				}
+				return;
+			}
+			if(td.cellIndex == 5){
+				var crow = td.parentElement;
+				var projectId=crow.cells[2].getAttribute('value');				
+				if(projectId==null || projectId==""  ){
+					return;
+				}
+				if(projectId.substr(0,1)!="P"){
+					return;
+				}
+				if(activityList==null){
+					var getActivity = function (list){
+						activityList = list;
+						showSelect(td,list);
+					};
+					dwrService.getActivityList(getActivity);
+				}else{
+					showSelect(td,activityList);
+				}
+				return;
+			}
+		}
+
+		function initTable(){
+			var s=document.getElementById("tblData");
+			var sf=0;
+			for(var i=0; i<s.rows[0].cells.length; i++){
+				if(i!=s.rows[0].cells.length-2){
+					sf += parseInt(s.rows[0].cells[i].width);
+				}
+			}
+			sf = s.offsetWidth-sf-30;
+			s.rows[0].cells[s.rows[0].cells.length-2].width= sf;
+		}
+		
+		function check(){
+			var obj = document.getElementById('check');
+			var tab = document.getElementById("tblData");
+			var rowLen = tab.rows.length;
+			var colLen = 0;
+			if(obj.checked == true){
+				obj.checked =true;
+				//appendRow
+				tab.detachEvent("onclick", showEditor);
+				//
+				//
+				for(var i = 1; i < rowLen; i++){
+					colLen = tab.rows[i].cells.length;
+					for(var j = 0; j < colLen-1;j++){
+						if(tab.rows[i].cells[j].innerText != ''){
+							tab.rows[i].cells[j].innerText ='';
+						}
+					}
+				}
+				document.getElementById("tblData").attachEvent("onclick", showEditorContent);
+				//
+				//
+				tab.rows[1].cells[0].innerText ='08:30';
+				tab.rows[1].cells[1].innerText ='11:30';
+				tab.rows[1].cells[2].setAttribute('value','RO');
+				tab.rows[1].cells[2].innerText = '';
+				tab.rows[1].cells[3].setAttribute('value','6');
+				tab.rows[1].cells[3].innerText = '';
+				//
+				tab.rows[2].cells[0].innerText ='12:30';
+				tab.rows[2].cells[1].innerText ='17:00';
+				tab.rows[2].cells[2].setAttribute('value','RO');
+				tab.rows[2].cells[2].innerText = '';
+				tab.rows[2].cells[3].setAttribute('value','6');
+				tab.rows[2].cells[3].innerText = '';
+				
+			}else{
+				obj.checked = false;
+				//
+				tab.attachEvent("onclick", showEditor);
+				//
+				for(var i = 1; i < rowLen; i++){
+					colLen = tab.rows[i].cells.length;
+					for(var j = 0; j < colLen-1;j++){
+						if(tab.rows[i].cells[j].innerText != ''){
+							tab.rows[i].cells[j].innerText ='';
+						}
+					}
+				}
+			}
+		}
+  </script>
+<style type="text/css">
+.tdTextImp { 
+ 	font-family: Verdana, Geneva, sans-serif;
+ 	font-size: 12px; 
+ 	line-height: 24px; 
+ 	color: #a40000; 
+ 	font-weight: normal;
+ 	cursor:pointer;
+}
+</style>
+
+</head>
+
+<body onload="onLoad();initTable();" onunload="onUnLoad()" scroll="no">
+<div style="width:100%;height:100%;overflow:auto;"> 
+<div id='dvEdit' style='display: none; position: absolute; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;'></div>
+<input type="hidden" name="personId" id="personId" value='344'>
+<input type="hidden" name="holidayFlag" id="holidayFlag" value='2'>
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr height="100%">
+		<td valign="top">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#98c0f4">
+			<tr>
+				<td height="100%" valign="top" bordercolor="#98c0f4" bgcolor="#FFFFFF">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td height="29" background="css_cmmi/images/r_top_bg2.gif">
+						<table width="476" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td width="42" align="center"><img
+									src="css_cmmi/images/pic_01.gif" width="16" height="15" /></td>
+								<td width="434"><span class="navDir"><strong></strong></span><strong><span
+									class="navDir">-&gt;</span></strong> <strong><span
+									class="navCur"></span></strong></td>
+							</tr>
+						</table>
+						</td>
+					</tr>
+				</table>
+				<table width="816" border="0" cellspacing="5" cellpadding="0">
+					<tr class="fieldText">
+						<td valign="top">
+						<table width="810" border="0" cellpadding="0" cellspacing="1"
+							bgcolor="#b0d4eb">
+							<tr>
+								<td valign="top" bgcolor="#ecf5fa">
+								<table width="790" border="0" align="center" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="76" height="40"><span class="panelCaption "></span></td>
+										<td width="350"><span class="panelCaption "> 
+											<input name="textfield" type="text" class="fieldText" id="textfield"
+											value=2015-10-12
+											disabled="disabled" /> </span></td>
+										<td width="350"><span class="panelCaption "> 
+											<input name="check" id="check" type="checkbox" value="goOut"  onclick="check(this)"
+										
+													/>
+										
+										</span></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" bgcolor="#ecf5fa">
+								<table width="790" border="0" align="center" cellpadding="0"
+									cellspacing="0">
+									<tr>
+										<td width="664" height="40" align="left"><span
+											class="panelCaption "></span></td>
+										<td width="114" align="right">
+										<div id='btnAddLine' text='' onclick="appendRow()"></div>
+										<script>
+					  		
+					  </script></td>
+									</tr>
+								</table>
+								<div style="padding:0px;width:100%;">
+								<style>
+									.tableData  td{
+										word-break:break-all; 
+										overflow:hidden; 
+										/*text-overflow:ellipsis;*/ 
+									}
+								</style>
+								<table id="tblData" class="tableData" width="100%"
+									border="0" align="center" cellpadding="0" cellspacing="0"
+									bgcolor="#b0d4eb">
+									<thead>
+									<tr>
+										<td width="60" ></td>
+										<td width="60" ></td>
+										<td width="92" ></td>
+										<td width="90" nowrap>/</td>
+										<td width="90" ></td>
+										<td width="88" ></td>
+										<td width="250" ></td>
+										<td width="45" ></td>
+									</tr>
+									</thead>
+								
+							
+								
+									<input type="hidden" name="isExsitFlag" id="isExsitFlag" value='0'>
+									<tr>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="left" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdTextImp"></td>
+									</tr>
+									<tr>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="left" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdTextImp"></td>
+									</tr>
+									<tr>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="left" bgcolor="#FFFFFF" class="tdText"></td>
+										<td align="center" bgcolor="#FFFFFF" class="tdTextImp"></td>
+									</tr>
+							
+								
+						
+							</table>
+							</div>
+							<table width="600" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td height="10"></td>
+								</tr>
+							</table>
+							</td>
+							</tr>
+							<tr>
+								<td valign="top" bgcolor="#ecf5fa">
+								<table width="790" border="0" align="center" cellpadding="0"
+									cellspacing="0">
+									<tr>
+										<td width="106" height="40"><span class="panelCaption "></span></td>
+										<td width="672">&nbsp;</td>
+									</tr>
+								</table>
+								<table width="790" border="0" align="center" cellpadding="5"
+									cellspacing="1" bgcolor="#b0d4eb">
+									<tr>
+										<td width="70" align="center" valign="top" bgcolor="#FFFFFF"><span
+											class="fieldCaption"></span></td>
+										<td width="697" valign="top" bgcolor="#FFFFFF"><span
+											class="fieldCaption"> 
+											<select name="select" class='fieldSelect' id="select" style='width: 200px' >
+													<option value=''></option>
+												
+													<option value='2'></option>
+												
+													<option value='1'></option>
+												
+											</select> </span></td>
+									</tr>
+									<tr>
+										<td align="center" bgcolor="#FFFFFF"><span
+											class="fieldCaption"></span></td>
+										<td valign="top" bgcolor="#FFFFFF"><span
+											class="fieldCaption"> 
+											<textarea name="textarea" id="textarea" 
+														style="border: 1px solid #7e9db9; background-color: #eaf3fa;" 
+														cols="85" rows="5" ></textarea> </span></td>
+									</tr>
+								</table>
+								<table width="790" border="0" align="center" cellpadding="0"
+									cellspacing="0">
+									<tr>
+										<td height="40">&nbsp;</td>
+										<td width="100" align="center">
+										<table width="80" border="0" cellspacing="0" cellpadding="0">
+											<td width="100" align="center">
+												<div id='btnSave' text="" onclick='saveDailyReportAndEmail()'></div>
+											</td>
+										</table>
+										</td>
+										<td align="center">&nbsp;</td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+						</table>
+						</td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</div>
+<script>
+	initButton('btnSave',80);
+	$("#textarea").focus(function(){
+		if($(this).val()=="..."){
+			$(this).val("");
+		}
+	});
+	$("#textarea").focusout(function(){
+		if($.trim($(this).val())==""){
+			$(this).html("<font color='#B5B5B5'>...</font>");
+		}
+	});
+</script>
+
+</body>
+</html>

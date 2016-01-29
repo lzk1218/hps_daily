@@ -1,0 +1,10 @@
+throw 'allowScriptTagRemoting is false.';
+//#DWR-INSERT
+//#DWR-REPLY
+var s0=[];var s1=[];var s2=[];var s3=[];var s4=[];var s5=[];s0[0]="4869";s0[1]="\u7F16\u7801";
+s1[0]="4870";s1[1]="\u6D4B\u8BD5";
+s2[0]="4868";s2[1]="\u8BBE\u8BA1";
+s3[0]="4871";s3[1]="\u7EF4\u62A4";
+s4[0]="4867";s4[1]="\u9879\u76EE\u7BA1\u7406";
+s5[0]="4872";s5[1]="\u9879\u76EE\u5C0F\u7ED3";
+dwr.engine._remoteHandleCallback('1','0',[s0,s1,s2,s3,s4,s5]);
